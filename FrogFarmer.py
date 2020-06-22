@@ -9,6 +9,7 @@ GUILD = 'Bot Testing'
 FROGCOST = 2
 FROGVALUE = 1
 PONDCOST = 10
+PONDSIZE = 10
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 
@@ -57,6 +58,9 @@ async def buyFrogs(ctx, amount):
         await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter frogs allowed')
     elif users[ctx.author]['money'] < amount * FROGCOST:
         await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} frogs for £{amount * FROGCOST}')
+    elif users[ctx.author]['frogs'] + amount > users[ctx.author]['ponds'] * PONDSIZE:
+        await ctx.send(f'{str(ctx.author)[:-5]}, you bought {users[ctx.author]["frogs"] + amount - users[ctx.author]["ponds"] * PONDSIZE}'
+                       f' too many frogs, you can only store {users[ctx.author]["ponds"] * PONDSIZE}')
     else:
         users[ctx.author]['money'] -= amount * FROGCOST
         users[ctx.author]['frogs'] += amount
@@ -85,7 +89,7 @@ async def pond(ctx, command='', *args):
 async def buyPonds(ctx, amount):
     print(f'{ctx.author} buying {amount} ponds')
     userInDictCheck(ctx)
-    if amount > 0:
+    if amount < 0:
         await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter ponds')
     elif users[ctx.author]['money'] < amount * PONDCOST:
         await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} ponds for £{amount * PONDCOST}')
