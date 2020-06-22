@@ -8,6 +8,7 @@ GUILD = 'Bot Testing'
 
 FROGCOST = 2
 FROGVALUE = 1
+PONDCOST = 10
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 
@@ -18,7 +19,7 @@ users = {}
 
 def userInDictCheck(ctx):
     if ctx.author not in users:
-        users[ctx.author] = {'money': 100, 'frogs': 0}
+        users[ctx.author] = {'money': 100, 'frogs': 0, 'ponds': 0}
 
 @bot.event
 async def on_ready():
@@ -42,7 +43,7 @@ async def farm(ctx):
 
 
 @bot.command('frog')
-async def frog(ctx, command: str = '', *args):
+async def frog(ctx, command= '', *args):
     if command == 'buy':
         await buyFrogs(ctx, int(args[0]))
     elif command == 'sell':
@@ -73,6 +74,25 @@ async def sellFrogs(ctx, amount):
         users[ctx.author]['money'] += amount * FROGVALUE
         users[ctx.author]['frogs'] -= amount
         await ctx.send(f'{str(ctx.author)[:-5]}, you sold {amount} frogs for £{amount * FROGVALUE}')
+
+
+@bot.command('pond')
+async def pond(ctx, command='', *args):
+    if command == 'buy':
+        await buyPonds(ctx, int(args[0]))
+
+
+async def buyPonds(ctx, amount):
+    print(f'{ctx.author} buying {amount} ponds')
+    userInDictCheck(ctx)
+    if amount > 0:
+        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter ponds')
+    elif users[ctx.author]['money'] < amount * PONDCOST:
+        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} ponds for £{amount * PONDCOST}')
+    else:
+        users[ctx.author]['money'] -= amount * PONDCOST
+        users[ctx.author]['ponds'] += amount
+        await ctx.send(f'{str(ctx.author)[:-5]}, you bought {amount} ponds for £{amount * PONDCOST}')
 
 
 @bot.command(name='balance', aliases=['bal'])
