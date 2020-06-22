@@ -54,9 +54,9 @@ async def buyFrogs(ctx, amount):
     print(f'{ctx.author} buying {amount} frogs')
     userInDictCheck(ctx)
     if amount <= 0:
-        await ctx.send(f'{str(ctx.author)[:-5]}, No buying antimatter frogs allowed')
+        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter frogs allowed')
     elif users[ctx.author]['money'] < amount * FROGCOST:
-        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} of frogs for £{amount * FROGCOST}')
+        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} frogs for £{amount * FROGCOST}')
     else:
         users[ctx.author]['money'] -= amount * FROGCOST
         users[ctx.author]['frogs'] += amount
