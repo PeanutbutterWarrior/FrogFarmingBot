@@ -9,7 +9,7 @@ GUILD = 'Bot Testing'
 FROGCOST = 2
 FROGVALUE = 1
 
-bot = commands.Bot(command_prefix='frog!', case_insensitive=True)
+bot = commands.Bot(command_prefix='!', case_insensitive=True)
 
 users = {}
 
