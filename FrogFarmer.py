@@ -41,8 +41,15 @@ async def farm(ctx):
     await ctx.send(f'{str(ctx.author)[:-5]} farmed {random.randint(10, 21)} frogs')
 
 
-@bot.command(name='buy')
-async def buy(ctx, amount: int):
+@bot.command('frog')
+async def frog(ctx, command: str = '', *args):
+    if command == 'buy':
+        await buyFrogs(ctx, int(args[0]))
+    elif command == 'sell':
+        await sellFrogs(ctx, int(args[0]))
+
+
+async def buyFrogs(ctx, amount):
     print(f'{ctx.author} buying {amount} frogs')
     userInDictCheck(ctx)
     if amount <= 0:
@@ -55,8 +62,7 @@ async def buy(ctx, amount: int):
         await ctx.send(f'{str(ctx.author)[:-5]}, you bought {amount} frogs for £{amount * FROGCOST}')
 
 
-@bot.command(name='sell')
-async def sell(ctx, amount: int):
+async def sellFrogs(ctx, amount):
     print(f'{ctx.author} selling {amount} frogs')
     userInDictCheck(ctx)
     if amount <= 0:
