@@ -23,16 +23,29 @@ class TimedCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.count = 0
-        self.counter.start()
+        #self.counter.start()
+        self.birdAttack.start()
 
     def cog_unload(self):
         self.counter.cancel()
+        self.birdAttack.cancel()
 
-    @tasks.loop(seconds=5.0)
+    @tasks.loop(seconds=5)
     async def counter(self):
         print(self.count)
         self.count += 1
 
+    @tasks.loop(hours=1)
+    async def birdAttack(self):
+        for user, items in users.items():
+            riskedFrogs = max(items['frogs'] - items['birdRepellers']*PONDSIZE, 0)
+            lost = random.randint(0, (riskedFrogs - 1)//10 + 1)
+            items['frogs'] -= lost
+            print(f'{user} lost {lost} frogs')
+
+    async def cog_command_error(self, ctx, error):
+        print('error')
+        raise error
 
 
 def userInDictCheck(ctx):
