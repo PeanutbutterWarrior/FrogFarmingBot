@@ -1,4 +1,4 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 import random
 
 with open('token', 'r') as file:
@@ -16,6 +16,19 @@ bot = commands.Bot(command_prefix='!', case_insensitive=True)
 users = {}
 
 # £
+
+
+class TimedCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.count = 0
+        self.counter.start()
+
+    @tasks.loop(seconds=5.0)
+    async def counter(self):
+        print(self.count)
+        self.count += 1
+
 
 
 def userInDictCheck(ctx):
@@ -100,5 +113,7 @@ async def balance(ctx):
     userInDictCheck(ctx)
     await ctx.send(f'{str(ctx.author)[:-5]}, your balance is £{users[ctx.author]["money"]} and you have {users[ctx.author]["frogs"]} frogs')
 
+
+bot.add_cog(TimedCog(bot))
 
 bot.run(TOKEN)
