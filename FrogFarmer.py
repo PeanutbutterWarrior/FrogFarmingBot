@@ -83,7 +83,6 @@ def deserialise():
             userItems = newAdditions.copy()
             for key, value in zip(headers, row):
                 if key == 'user':
-                    print(int(value))
                     name = bot.get_user(int(value))
                 else:
                     userItems[key] = int(value)
