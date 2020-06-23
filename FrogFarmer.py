@@ -80,9 +80,9 @@ async def sell(ctx, item='', *args):
 async def buyFrogs(ctx, amount):
     userInDictCheck(ctx)
     if amount <= 0:
-        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter frogs allowed')
+        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter')
     elif users[ctx.author]['money'] < amount * FROGCOST:
-        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} frogs for £{amount * FROGCOST}')
+        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money')
     elif users[ctx.author]['frogs'] + amount > users[ctx.author]['ponds'] * PONDSIZE:
         await ctx.send(f'{str(ctx.author)[:-5]}, you bought {users[ctx.author]["frogs"] + amount - users[ctx.author]["ponds"] * PONDSIZE}'
                        f' too many frogs, you can only store {users[ctx.author]["ponds"] * PONDSIZE}')
@@ -95,7 +95,7 @@ async def buyFrogs(ctx, amount):
 async def sellFrogs(ctx, amount):
     userInDictCheck(ctx)
     if amount <= 0:
-        await ctx.send(f'{str(ctx.author)[:-5]}, No antimatter frogs allowed')
+        await ctx.send(f'{str(ctx.author)[:-5]}, no selling antimatter')
     elif users[ctx.author]['frogs'] < amount:
         await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough frogs')
     else:
@@ -107,9 +107,9 @@ async def sellFrogs(ctx, amount):
 async def buyPonds(ctx, amount):
     userInDictCheck(ctx)
     if amount < 0:
-        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter ponds')
+        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter')
     elif users[ctx.author]['money'] < amount * PONDCOST:
-        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money to buy {amount} ponds for £{amount * PONDCOST}')
+        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money')
     else:
         users[ctx.author]['money'] -= amount * PONDCOST
         users[ctx.author]['ponds'] += amount
