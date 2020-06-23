@@ -10,6 +10,7 @@ FROGCOST = 2
 FROGVALUE = 1
 PONDCOST = 10
 PONDSIZE = 10
+BIRDREPELLERCOST = 5
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
 
@@ -24,6 +25,9 @@ class TimedCog(commands.Cog):
         self.count = 0
         self.counter.start()
 
+    def cog_unload(self):
+        self.counter.cancel()
+
     @tasks.loop(seconds=5.0)
     async def counter(self):
         print(self.count)
@@ -33,7 +37,7 @@ class TimedCog(commands.Cog):
 
 def userInDictCheck(ctx):
     if ctx.author not in users:
-        users[ctx.author] = {'money': 100, 'frogs': 0, 'ponds': 0}
+        users[ctx.author] = {'money': 100, 'frogs': 0, 'ponds': 1, 'birdRepellers': 0}
 
 @bot.event
 async def on_ready():
@@ -48,6 +52,8 @@ async def on_command_error(ctx, error):
         print(f'{ctx.author} error, missing arg(s)')
     elif isinstance(error, commands.errors.BadArgument):
         print(f'{ctx.author} error, bad arg(s)')
+    else:
+        raise error
 
 
 @bot.command(name='farm')
@@ -61,6 +67,8 @@ async def buy(ctx, item='', *args):
         await buyFrogs(ctx, int(args[0]))
     elif item == 'pond':
         await buyPonds(ctx, int(args[0]))
+    elif item == 'bird-repeller':
+        await buyBirdRepeller(ctx, int(args[0]))
 
 
 @bot.command(name='sell')
@@ -106,6 +114,20 @@ async def buyPonds(ctx, amount):
         users[ctx.author]['money'] -= amount * PONDCOST
         users[ctx.author]['ponds'] += amount
         await ctx.send(f'{str(ctx.author)[:-5]}, you bought {amount} ponds for £{amount * PONDCOST}')
+
+
+async def buyBirdRepeller(ctx, amount):
+    userInDictCheck(ctx)
+    if amount < 0:
+        await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter')
+    elif users[ctx.author]['money'] < amount * BIRDREPELLERCOST:
+        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough money')
+    elif users[ctx.author]['ponds'] < users[ctx.author]['birdRepellers'] + amount:
+        await ctx.send(f'{str(ctx.author)[:-5]}, you do not have enough ponds to store {amount} more bird repellers')
+    else:
+        users[ctx.author]['money'] -= amount * BIRDREPELLERCOST
+        users[ctx.author]['birdRepellers'] += amount
+        await ctx.send(f'{str(ctx.author)[:-5]}, you bought {amount} bird repellers for £{amount * BIRDREPELLERCOST}')
 
 
 @bot.command(name='balance', aliases=['bal'])
