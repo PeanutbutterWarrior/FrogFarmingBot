@@ -39,20 +39,24 @@ async def on_command_error(ctx, error):
 
 @bot.command(name='farm')
 async def farm(ctx):
-    print(f'{ctx.author} farmed')
     await ctx.send(f'{str(ctx.author)[:-5]} farmed {random.randint(10, 21)} frogs')
 
 
-@bot.command('frog')
-async def frog(ctx, command= '', *args):
-    if command == 'buy':
+@bot.command(name='buy')
+async def buy(ctx, item='', *args):
+    if item == 'frog':
         await buyFrogs(ctx, int(args[0]))
-    elif command == 'sell':
+    elif item == 'pond':
+        await buyPonds(ctx, int(args[0]))
+
+
+@bot.command(name='sell')
+async def sell(ctx, item='', *args):
+    if item == 'frog':
         await sellFrogs(ctx, int(args[0]))
 
 
 async def buyFrogs(ctx, amount):
-    print(f'{ctx.author} buying {amount} frogs')
     userInDictCheck(ctx)
     if amount <= 0:
         await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter frogs allowed')
@@ -68,7 +72,6 @@ async def buyFrogs(ctx, amount):
 
 
 async def sellFrogs(ctx, amount):
-    print(f'{ctx.author} selling {amount} frogs')
     userInDictCheck(ctx)
     if amount <= 0:
         await ctx.send(f'{str(ctx.author)[:-5]}, No antimatter frogs allowed')
@@ -80,14 +83,7 @@ async def sellFrogs(ctx, amount):
         await ctx.send(f'{str(ctx.author)[:-5]}, you sold {amount} frogs for £{amount * FROGVALUE}')
 
 
-@bot.command('pond')
-async def pond(ctx, command='', *args):
-    if command == 'buy':
-        await buyPonds(ctx, int(args[0]))
-
-
 async def buyPonds(ctx, amount):
-    print(f'{ctx.author} buying {amount} ponds')
     userInDictCheck(ctx)
     if amount < 0:
         await ctx.send(f'{str(ctx.author)[:-5]}, no buying antimatter ponds')
@@ -101,7 +97,6 @@ async def buyPonds(ctx, amount):
 
 @bot.command(name='balance', aliases=['bal'])
 async def balance(ctx):
-    print(f'{ctx.author} checking balance')
     userInDictCheck(ctx)
     await ctx.send(f'{str(ctx.author)[:-5]}, your balance is £{users[ctx.author]["money"]} and you have {users[ctx.author]["frogs"]} frogs')
 
