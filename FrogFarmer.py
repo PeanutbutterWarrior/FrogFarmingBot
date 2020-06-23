@@ -1,5 +1,7 @@
 from discord.ext import commands, tasks
+from datetime import datetime
 import random
+import csv
 
 with open('token', 'r') as file:
     TOKEN = file.read()
@@ -13,6 +15,8 @@ PONDSIZE = 10
 BIRDREPELLERCOST = 5
 
 bot = commands.Bot(command_prefix='!', case_insensitive=True)
+
+basicUserItems = {'money': 100, 'frogs': 0, 'ponds': 1, 'birdRepellers': 0}
 
 users = {}
 
@@ -50,13 +54,48 @@ class TimedCog(commands.Cog):
 
 def userInDictCheck(ctx):
     if ctx.author not in users:
-        users[ctx.author] = {'money': 100, 'frogs': 0, 'ponds': 1, 'birdRepellers': 0}
+        users[ctx.author] = basicUserItems.copy()
+
+
+@bot.command(name='serialise')
+async def serialise(ctx):
+    with open('users.csv', 'w+', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['userId'] + list(basicUserItems.keys()))
+        for key, items in users.items():
+            writer.writerow([key.id] + list(items.values()))
+        time = f'Serialised at {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}'
+        file.write(time)
+    print(time)
+
+
+def deserialise():
+    with open('users.csv', 'r') as file:
+        reader = csv.reader(file)
+        headers = next(reader)
+        newAdditions = {}
+        for key in basicUserItems:
+            if key not in headers:
+                newAdditions[key] = basicUserItems[key]
+        for row in reader:
+            if len(row) == 1:
+                break
+            userItems = newAdditions.copy()
+            for key, value in zip(headers, row):
+                if key == 'user':
+                    print(int(value))
+                    name = bot.get_user(int(value))
+                else:
+                    userItems[key] = int(value)
+            users[name] = userItems
+
 
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
         print(f'I\'m in {guild.name}')
     print(f'{bot.user} has connected to Discord')
+    deserialise()
 
 
 @bot.event
@@ -147,6 +186,11 @@ async def buyBirdRepeller(ctx, amount):
 async def balance(ctx):
     userInDictCheck(ctx)
     await ctx.send(f'{str(ctx.author)[:-5]}, your balance is £{users[ctx.author]["money"]} and you have {users[ctx.author]["frogs"]} frogs')
+
+
+@bot.command(name='debug')
+async def debug(ctx):
+    print(users)
 
 
 bot.add_cog(TimedCog(bot))
